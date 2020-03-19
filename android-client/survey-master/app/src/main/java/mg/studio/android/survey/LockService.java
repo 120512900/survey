@@ -39,7 +39,10 @@ public class LockService extends Service {
         if (ReportActivity.bStart) return;
         wManager = (WindowManager)getSystemService(WINDOW_SERVICE);
         lParams = new WindowManager.LayoutParams();
-        lParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        //if sdk>=26,use:
+        // mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        //else use:
+        lParams.type = WindowManager.LayoutParams.TYPE_PHONE;
 //        lParams.format = PixelFormat.RGBA_8888;
 //        lParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         lParams.width = WindowManager.LayoutParams.MATCH_PARENT;

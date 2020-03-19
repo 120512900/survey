@@ -32,7 +32,10 @@ public class PswdService extends Service {
     private void setInitialPassword() {
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mLayoutParams = new WindowManager.LayoutParams();
-        mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        //if sdk>=26,use:
+        // mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        //else use:
+        mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
 //        mLayoutParams.format = PixelFormat.RGBA_8888;
 //        mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
 //                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;

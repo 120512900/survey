@@ -29,6 +29,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class MainActivity extends AppCompatActivity {
 
     private CheckBox mCbAccept;
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private JSONObject[] answers;
     static AppCompatActivity mainActivity;
     private String text;
+    private String surveyURL;
     private int qNum = 0; // number of questions
     private int qSeq = 0; // sequence
     private String surveyId;
@@ -70,37 +77,47 @@ public class MainActivity extends AppCompatActivity {
     // scan qr code
     private void scanQRCode() {
         getCameraPermission();
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.initiateScan();
+        /*IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.initiateScan();*/
+        Intent intent=new Intent(MainActivity.this,ScanActivity.class);
+        startActivityForResult(intent,2020);
     }
 
     // get text from qr code
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     @androidx.annotation.Nullable Intent data) {
-        if (requestCode == 0) {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
-            } else {
-                startService(new Intent(this, PswdService.class));
-                Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-            if (scanResult != null) {
-                text = scanResult.getContents();
-                Toast.makeText(getApplicationContext(), R.string.get_data, Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.get_no_data, Toast.LENGTH_LONG).show();
+
+        switch (requestCode) {
+            case 2020:
+                if(data!=null) {
+                    surveyURL =data.getStringExtra("content");
+                    Log.i("传递成功的数据", "onActivityResult: "+text);
+                    Toast.makeText(getApplicationContext(), R.string.get_data, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.get_no_data, Toast.LENGTH_LONG).show();
+                }
+
+                break;
+
+            case 0:
+                super.onActivityResult(requestCode, resultCode, data);
+                if (!Settings.canDrawOverlays(this)) {
+                    Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
+                } else {
+                    startService(new Intent(this, PswdService.class));
+                    Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+                }
+                break;
             }
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }
 
     // analyse the question text
     @Nullable
     private JSONArray GetQuestions() {
+        text=getTextContent();
         try {
             if (text == null || text.length() == 0) return null;
             JSONObject json = new JSONObject(text);
@@ -113,6 +130,25 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
+   private String getTextContent(){
+        try{
+            URL url=new URL(surveyURL);
+            HttpURLConnection conn= (HttpURLConnection) url.openConnection();
+            InputStream input=conn.getInputStream();
+            BufferedReader in=new BufferedReader(new InputStreamReader(input));
+            String line;
+            StringBuffer buffer=new StringBuffer();
+            while((line=in.readLine())!=null){
+                buffer.append(line);
+            }
+            return buffer.toString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+   }
 
     // if the type is single, the app will load a layout
     // to display the single choice question
