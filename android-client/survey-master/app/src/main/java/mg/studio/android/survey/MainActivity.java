@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             case 2020:
                 if(data!=null) {
                     surveyURL =data.getStringExtra("content");
-                    Log.i("传递成功的数据", "onActivityResult: "+text);
+                    Log.i("传递成功的数据", "onActivityResult: "+surveyURL);
                     Toast.makeText(getApplicationContext(), R.string.get_data, Toast.LENGTH_LONG).show();
                 }
                 else {
@@ -134,23 +135,57 @@ public class MainActivity extends AppCompatActivity {
 
 //get text content from net
    private String getTextContent(){
+        getInternetPermission();
+
         try{
             URL url=new URL(surveyURL);
+            Log.i("设置url", "getTextContent: ");
+
             HttpURLConnection conn= (HttpURLConnection) url.openConnection();
-            InputStream input=conn.getInputStream();
-            BufferedReader in=new BufferedReader(new InputStreamReader(input));
+            Log.i("连接成功", "getTextContent: ");
+            conn.setRequestMethod("GET");
+
+            InputStream inp=conn.getInputStream();
+            Log.i("获取输入流", "getTextContent: ");
+
+            /*DataInputStream*/
+            BufferedReader in=new BufferedReader(new InputStreamReader(inp));
+            Log.i("新建buffer", "getTextContent: ");
+
             String line;
-            StringBuffer buffer=new StringBuffer();
+            StringBuilder buffer=new StringBuilder();
             while((line=in.readLine())!=null){
                 buffer.append(line);
+                Log.i("输入了一行", "getTextContent: ");
+
             }
+            if(buffer.toString().equals("")){
+                Log.i("数据为空1", "getTextContent: ");
+            }
+            conn.disconnect();
             return buffer.toString();
         }
+        catch (MalformedURLException me){
+            me.printStackTrace();
+            return null;
+        }
         catch (IOException e){
+            Log.i("数据为空2", "getTextContent: ");
             e.printStackTrace();
             return null;
         }
    }
+   //request Internet
+   private void getInternetPermission() {
+       if (ContextCompat.checkSelfPermission(this,
+               Manifest.permission.INTERNET) !=
+               PackageManager.PERMISSION_GRANTED) {
+           ActivityCompat.requestPermissions(this, new String[]{
+                   Manifest.permission.INTERNET
+           }, 120);
+       }
+   }
+
 
     // if the type is single, the app will load a layout
     // to display the single choice question
@@ -223,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickGo(View view) {
         checkInitialPswd();
         // initial question list
-        if (text == null || text.length() == 0) {
+        if (surveyURL == null || surveyURL.length() == 0) {
             Toast.makeText(this, R.string.without_data,
                     Toast.LENGTH_SHORT).show();
             return;
