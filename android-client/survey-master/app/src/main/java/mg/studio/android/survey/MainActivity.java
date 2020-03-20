@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+//get text content from net
    private String getTextContent(){
         try{
             URL url=new URL(surveyURL);
@@ -144,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 buffer.append(line);
             }
             return buffer.toString();
-        }catch (Exception e){
+        }
+        catch (IOException e){
             e.printStackTrace();
             return null;
         }

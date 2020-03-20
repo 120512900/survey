@@ -22,11 +22,6 @@ public class ScanActivity extends AppCompatActivity implements ZXingScannerView.
         zXingScannerView=new ZXingScannerView(this);
         ViewGroup qrFrame=findViewById(R.id.qr_frame);
         qrFrame.addView(zXingScannerView);
-        //zXingScannerView.resumeCameraPreview(this);
-       // zXingScannerView.setAutoFocus(true);
-       // zXingScannerView.setResultHandler(this);
-        //zXingScannerView.stopCameraPreview();
-        //zXingScannerView.startCamera();
     }
 
 
