@@ -9,6 +9,8 @@ Android Survey core project for a primary design practice using Android Studio.
 Users can make questionnaires through online websites and generate qr codes for publication.
 The user needs to set the password when installing the APP for the first time. The user can obtain the questionnaire information by scanning the code. After filling in the questionnaire, the user can check the answer results and save the questionnaire answers to the SQLite database.
 The user needs to fill in the password to confirm the exit.
+
+![image]()
 # Completed functionalities:
 1. Make online questionnaires and generate qr codes;
 2. Scan the qr code to download the questionnaire (json format)
